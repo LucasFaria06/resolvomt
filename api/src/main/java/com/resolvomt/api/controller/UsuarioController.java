@@ -8,21 +8,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.resolvomt.api.dto.UsuarioResponse;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
-
+    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody Usuario usuario){
+        
         Usuario novoUsuario = usuarioRepository.save(usuario);
 
-        return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
+        UsuarioResponse response = new UsuarioResponse(novoUsuario);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
