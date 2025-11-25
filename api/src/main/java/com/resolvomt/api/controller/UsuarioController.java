@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.resolvomt.api.dto.UsuarioResponse;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -19,8 +20,14 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping
     public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody Usuario usuario){
+
+        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+        usuario.setSenha(senhaCriptografada);
         
         Usuario novoUsuario = usuarioRepository.save(usuario);
 
