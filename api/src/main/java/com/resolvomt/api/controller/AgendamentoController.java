@@ -27,23 +27,30 @@ public class AgendamentoController{
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @PostMapping
-    public ResponseEntity<AgendamentoResponse> criar(@RequestBody Agendamento agendamento) {
+   @PostMapping
+    public ResponseEntity<AgendamentoResponse> criar(@RequestBody com.resolvomt.api.dto.AgendamentoRequestDTO dto) {
         
-        Usuario clienteReal = usuarioRepository.findById(agendamento.getCliente().getId())
-            .orElseThrow(() -> new RuntimeException("Cliente não encontrado no banco!"));
+        // 1. O DTO nos entregou os IDs (Long). Agora buscamos os objetos reais no banco.
+        Usuario clienteReal = usuarioRepository.findById(dto.getClienteId())
+            .orElseThrow(() -> new RuntimeException("Cliente não encontrado id: " + dto.getClienteId()));
 
-        Usuario prestadorReal = usuarioRepository.findById(agendamento.getPrestador().getId())
-           .orElseThrow(() -> new RuntimeException("Prestador não encontrado no banco!"));
+        Usuario prestadorReal = usuarioRepository.findById(dto.getPrestadorId())
+            .orElseThrow(() -> new RuntimeException("Prestador não encontrado id: " + dto.getPrestadorId()));
 
+        // 2. Montamos o Agendamento (Entity) para salvar
+        Agendamento agendamento = new Agendamento();
         agendamento.setCliente(clienteReal);
         agendamento.setPrestador(prestadorReal);
+        agendamento.setDataServico(dto.getDataServico());
+        agendamento.setDescricao(dto.getDescricao());
+        agendamento.setValorTotal(dto.getValorTotal());
+        // status já é "PENDENTE" por padrão na classe Agendamento
 
+        // 3. Salvamos no banco
         Agendamento salvo = agendamentoRepository.save(agendamento);
 
-        AgendamentoResponse response = new AgendamentoResponse(salvo);
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        // 4. Convertemos para o seu Response (que já existe e é ótimo)
+        return new ResponseEntity<>(new AgendamentoResponse(salvo), HttpStatus.CREATED);
     }
 
     @GetMapping

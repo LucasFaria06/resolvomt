@@ -8,11 +8,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 public class TratadorDeErros {
+
+   @ExceptionHandler(DataIntegrityViolationException.class)
+public ResponseEntity<String> tratarErroDeIntegridade(DataIntegrityViolationException ex) {
+    String erroReal = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
     
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> tratarErroDeDuplicidade(){
-        return ResponseEntity
+    return ResponseEntity
         .status(HttpStatus.CONFLICT)
-        .body("Já existe um usuário cadastrado com este email!");
-    }
+        .body("Erro de Integridade do Banco: " + erroReal);
+}
 }

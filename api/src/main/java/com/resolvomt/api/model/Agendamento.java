@@ -25,6 +25,9 @@ public class Agendamento {
     private LocalDateTime dataServico;
 
     @Column(nullable = false)
+    private String descricao;
+
+    @Column(nullable = false)
     private String status = "PENDENTE";
 
     @Column(name = "valor_total", nullable = false)
