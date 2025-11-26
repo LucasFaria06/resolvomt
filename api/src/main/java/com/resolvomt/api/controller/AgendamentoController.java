@@ -1,79 +1,47 @@
 package com.resolvomt.api.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.resolvomt.api.dto.AgendamentoResponse;
 import com.resolvomt.api.dto.AtualizacaoStatusRequest;
 import com.resolvomt.api.model.Agendamento;
-import com.resolvomt.api.model.Usuario;
-import com.resolvomt.api.repository.AgendamentoRepository;
-import com.resolvomt.api.repository.UsuarioRepository;
+import com.resolvomt.api.service.AgendamentoService;
 
 @RestController
 @RequestMapping("/agendamentos")
-public class AgendamentoController{
-    
-    @Autowired
-    private AgendamentoRepository agendamentoRepository;
+public class AgendamentoController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private AgendamentoService service;
 
-   @PostMapping
-    public ResponseEntity<AgendamentoResponse> criar(@RequestBody com.resolvomt.api.dto.AgendamentoRequestDTO dto) {
-            Usuario clienteReal = usuarioRepository.findById(dto.getClienteId())
-            .orElseThrow(() -> new RuntimeException("Cliente não encontrado id: " + dto.getClienteId()));
+    @GetMapping
+    public ResponseEntity<List<AgendamentoResponse>> listar() {
+        List<AgendamentoResponse> lista = service.listarTodos().stream()
+                .map(AgendamentoResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(lista);
+    }
 
-        Usuario prestadorReal = usuarioRepository.findById(dto.getPrestadorId())
-            .orElseThrow(() -> new RuntimeException("Prestador não encontrado id: " + dto.getPrestadorId()));
-
-        Agendamento agendamento = new Agendamento();
-        agendamento.setCliente(clienteReal);
-        agendamento.setPrestador(prestadorReal);
-        agendamento.setDataServico(dto.getDataServico());
-        agendamento.setDescricao(dto.getDescricao());
-        agendamento.setValorTotal(dto.getValorTotal());
-
-        Agendamento salvo = agendamentoRepository.save(agendamento);
-
+    @PostMapping
+    public ResponseEntity<AgendamentoResponse> criar(@RequestBody Agendamento agendamento) {
+        Agendamento salvo = service.cadastrar(agendamento);
         return new ResponseEntity<>(new AgendamentoResponse(salvo), HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<AgendamentoResponse>> listarTodos(){
-        List<Agendamento> agendamentosDoBanco = agendamentoRepository.findAll();
-        
-        List<AgendamentoResponse> listaSegura = agendamentosDoBanco.stream()
-             .map(AgendamentoResponse::new)
-             .toList();
-
-        return ResponseEntity.ok(listaSegura);
-    }
-
     @PatchMapping("/{id}/status")
-    public ResponseEntity<AgendamentoResponse> atualizarStatus(
-        @PathVariable Long id,
-        @RequestBody AtualizacaoStatusRequest request) {
-
-        Agendamento agendamento = agendamentoRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Agendamento não encontrado!"));
+    public ResponseEntity<AgendamentoResponse> atualizarStatus(@PathVariable Long id, @RequestBody AtualizacaoStatusRequest request) {
+        Agendamento agendamento = service.buscarPorId(id);
         
         agendamento.setStatus(request.getStatus());
-
-        agendamentoRepository.save(agendamento);
-
-        return ResponseEntity.ok(new AgendamentoResponse(agendamento));
-        }
-    
+        
+        Agendamento atualizado = service.cadastrar(agendamento);
+        
+        return ResponseEntity.ok(new AgendamentoResponse(atualizado));
+    }
 }

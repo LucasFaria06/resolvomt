@@ -7,32 +7,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.resolvomt.api.dto.UsuarioResponse;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.resolvomt.api.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UsuarioService service;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody Usuario usuario){
+    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody @Valid Usuario usuario){
 
-        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-        usuario.setSenha(senhaCriptografada);
+        Usuario novoUsuario = service.cadastrar(usuario);
         
-        Usuario novoUsuario = usuarioRepository.save(usuario);
-
-        UsuarioResponse response = new UsuarioResponse(novoUsuario);
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(new UsuarioResponse(novoUsuario), HttpStatus.CREATED);
     }
 }
