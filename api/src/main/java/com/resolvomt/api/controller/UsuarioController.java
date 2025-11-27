@@ -11,8 +11,6 @@ import jakarta.validation.Valid;
 
 import com.resolvomt.api.dto.UsuarioResponse;
 import com.resolvomt.api.model.Usuario;
-import com.resolvomt.api.repository.UsuarioRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import com.resolvomt.api.service.UsuarioService;
 
 @RestController

@@ -25,4 +25,14 @@ public class AgendamentoService {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
     }
+
+    public void cancelar(Long id) {
+        Agendamento agendamento = buscarPorId(id);
+
+        if(!"PENDENTE".equals(agendamento.getStatus())) {
+            throw new RuntimeException("Não é possível cancelar agendamentos que não estão PENDENTES.");
+        }
+        
+            repository.delete(agendamento);
+    }
 }

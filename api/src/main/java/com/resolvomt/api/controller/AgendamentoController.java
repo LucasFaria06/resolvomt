@@ -28,6 +28,12 @@ public class AgendamentoController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AgendamentoResponse> buscarPorId(@PathVariable Long id) {
+        Agendamento agendamento = service.buscarPorId(id);
+        return ResponseEntity.ok(new AgendamentoResponse(agendamento));
+    }
+
     @PostMapping
     public ResponseEntity<AgendamentoResponse> criar(@RequestBody Agendamento agendamento) {
         Agendamento salvo = service.cadastrar(agendamento);
@@ -37,11 +43,14 @@ public class AgendamentoController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<AgendamentoResponse> atualizarStatus(@PathVariable Long id, @RequestBody AtualizacaoStatusRequest request) {
         Agendamento agendamento = service.buscarPorId(id);
-        
         agendamento.setStatus(request.getStatus());
-        
         Agendamento atualizado = service.cadastrar(agendamento);
-        
         return ResponseEntity.ok(new AgendamentoResponse(atualizado));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelar(@PathVariable Long id){
+        service.cancelar(id);
+        return ResponseEntity.noContent().build();
     }
 }
