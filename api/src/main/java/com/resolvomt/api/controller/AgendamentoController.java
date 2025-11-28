@@ -8,10 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.resolvomt.api.dto.AgendamentoRequest;
 import com.resolvomt.api.dto.AgendamentoResponse;
 import com.resolvomt.api.dto.AtualizacaoStatusRequest;
 import com.resolvomt.api.model.Agendamento;
+import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.service.AgendamentoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/agendamentos")
@@ -35,8 +39,24 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<AgendamentoResponse> criar(@RequestBody Agendamento agendamento) {
+    public ResponseEntity<AgendamentoResponse> criar(@RequestBody @Valid AgendamentoRequest request) {
+       
+        Agendamento agendamento = new Agendamento();
+        agendamento.setDescricao(request.descricao());
+        agendamento.setDataServico(request.dataServico());
+        agendamento.setValorTotal(request.valorTotal());
+        agendamento.setStatus("PENDENTE");
+
+        Usuario cliente = new Usuario();
+        cliente.setId(request.idCliente());
+        agendamento.setCliente(cliente);
+
+        Usuario prestador = new Usuario();
+        prestador.setId(request.idPrestador());
+        agendamento.setPrestador(prestador);
+
         Agendamento salvo = service.cadastrar(agendamento);
+
         return new ResponseEntity<>(new AgendamentoResponse(salvo), HttpStatus.CREATED);
     }
 
