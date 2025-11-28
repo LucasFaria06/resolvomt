@@ -23,24 +23,23 @@ public class SecurityConfigurations {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable()) // Desabilita proteção contra ataques de form (não precisa em API)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não guarda sessão, usa Token
+        return http.csrf(csrf -> csrf.disable()) 
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
                 .authorizeHttpRequests(req -> {
-                    // --- REGRAS DE ACESSO ---
-                    req.requestMatchers(HttpMethod.POST, "/login").permitAll(); // Login é público (óbvio)
-                    req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll(); // Cadastro é público
-                    req.anyRequest().authenticated(); // O resto TEM que estar logado
+                    req.requestMatchers(HttpMethod.POST, "/login").permitAll(); 
+                    req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll(); 
+                    req.anyRequest().authenticated(); 
                 })
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) // Adiciona nosso filtro antes do padrão
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) 
                 .build();
     }
 
-    @Bean // Exporta o AuthenticationManager para o Controller usar
+    @Bean 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
-    @Bean // Ensina o Spring a usar hash BCrypt nas senhas
+    @Bean 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
