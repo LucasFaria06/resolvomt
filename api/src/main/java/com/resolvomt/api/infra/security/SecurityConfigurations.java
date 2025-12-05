@@ -27,10 +27,14 @@ public class SecurityConfigurations {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
 
+                    req.requestMatchers("/profissionais/").permitAll();
                     req.requestMatchers("/profissionais/**").permitAll();
                     // Login e Cadastro
                     req.requestMatchers(HttpMethod.POST, "/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
+
+                    req.requestMatchers(HttpMethod.POST, "/agendamentos").permitAll();
+                    req.requestMatchers(HttpMethod.GET, "/agendamentos").permitAll();
 
                     req.requestMatchers(
                         "/v3/api-docs/**",

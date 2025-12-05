@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+
 @Data
 @Entity
 @Table(name = "agendamentos")
@@ -13,23 +14,31 @@ public class Agendamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Usuario cliente;
+    private LocalDateTime dataHorario;
+
+    private String status;
 
     @ManyToOne
-    @JoinColumn(name = "prestador_id", nullable = false)
-    private Usuario prestador;
+    @JoinColumn(name = "profissional_id")
+    private Profissional profissional;
 
-    @Column(nullable = false)
-    private LocalDateTime dataServico;
+    public Agendamento() {}
 
-    @Column(nullable = false)
-    private String descricao;
+    public Agendamento(LocalDateTime dataHorario, Profissional profissional) {
+        this.dataHorario = dataHorario;
+        this.profissional = profissional;
+        this.status ="PENDENTE";
+    }
 
-    @Column(nullable = false)
-    private String status = "PENDENTE";
+    public Long getId() { return id;}
+    public void setId(Long id) {this.id = id;}
 
-    @Column(name = "valor_total", nullable = false)
-    private Double valorTotal;
+    public LocalDateTime getDataHorario() { return dataHorario;}
+    public void setDataHorario(LocalDateTime dataHorario) { this.dataHorario = dataHorario;}
+
+    public String getStatus() { return status;}
+    public void setStatus( String status) {this.status = status;} 
+    
+    public Profissional profissional() {return profissional;}
+    public void setProfissional(Profissional profissional) {this.profissional = profissional;}
 }

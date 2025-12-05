@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -17,8 +16,7 @@ import com.resolvomt.api.model.Usuario;
 @Service
 public class TokenService {
     
-    @Value("${api.security.token.secret}")
-    private String secret;
+    private String secret = "12345678";
 
     public String gerarToken(Usuario usuario) {
         try {
