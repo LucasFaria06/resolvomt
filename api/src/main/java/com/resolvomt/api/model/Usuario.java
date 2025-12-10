@@ -1,16 +1,14 @@
 package com.resolvomt.api.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.resolvomt.api.enums.TipoUsuario;
 
 @Data
 @Entity
@@ -21,24 +19,26 @@ public class Usuario implements UserDetails{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column
+    @Column(name = "nome_completo", nullable = false)
     private String nomeCompleto;
 
-    @NotBlank
-    @Email
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
     @Column(nullable = false)
     private String senha;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_usuario", nullable = false)
-    private String tipoUsuario;
+    private TipoUsuario tipoUsuario;
 
-    @Column(name = "data_cadastro")
-    private LocalDateTime dataCadastro = LocalDateTime.now();
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDateTime dataCadastro;
+
+    @PrePersist
+    public void prePersist(){
+        this.dataCadastro = LocalDateTime.now();
+    }
 
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -61,17 +61,13 @@ public class Usuario implements UserDetails{
    }
 
    @Override
-   public boolean isAccountNonLocked(){
-    return true;
-   }
-
-   @Override
    public boolean isCredentialsNonExpired(){
     return true;
    }
 
    @Override
-   public boolean isEnabled(){
+   public boolean isEnabled() {
     return true;
    }
+
 }

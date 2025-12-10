@@ -7,5 +7,7 @@ import com.resolvomt.api.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
       UserDetails findByEmail(String email);
+
+      boolean existsByEmail(String email);
 }
 

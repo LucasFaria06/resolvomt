@@ -1,30 +1,30 @@
 package com.resolvomt.api.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Data;
 
-public record AgendamentoRequest (
-    @NotBlank(message = "A descrição é obrigatória")
-    String descricao,
+import java.time.LocalDateTime;
 
-    @NotNull(message = "A data é obrigatória")
+@Data 
+public class AgendamentoRequest {
+
+    @NotNull(message = "A data do serviço é obrigatória")
     @Future(message = "A data deve ser no futuro")
-    LocalDateTime dataServico,
+    private LocalDateTime dataServico;
 
-    @NotNull
+    @NotBlank(message = "A descrição do serviço não pode estar vazia")
+    private String descricao;
+
+    @NotNull(message = "O valor é obrigatório")
     @Positive(message = "O valor deve ser positivo")
-    Double valorTotal,
+    private Double valorTotal;
 
     @NotNull(message = "ID do cliente é obrigatório")
-    Long idCliente,
+    private Long clienteId;
 
     @NotNull(message = "ID do prestador é obrigatório")
-    Long idPrestador
-){
-    
+    private Long prestadorId;
 }
-    
