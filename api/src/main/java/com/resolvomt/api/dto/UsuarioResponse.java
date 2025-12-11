@@ -1,21 +1,25 @@
 package com.resolvomt.api.dto;
 
+import java.time.LocalDateTime;
 import com.resolvomt.api.model.Usuario;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+
+@Getter
 public class UsuarioResponse {
     
     private Long id;
     private String nomeCompleto;
     private String email;
+    private LocalDateTime dataCadastro;
     private String tipoUsuario;
 
     public UsuarioResponse(Usuario usuario) {
         this.id = usuario.getId();
         this.nomeCompleto = usuario.getNomeCompleto();
         this.email = usuario.getEmail();
-        this.tipoUsuario = usuario.getTipoUsuario();
+        this.tipoUsuario = usuario.getTipoUsuario().name();
+        this.dataCadastro = usuario.getDataCadastro();
     }
 }

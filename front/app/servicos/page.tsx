@@ -3,6 +3,7 @@ import { MapPin, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { api } from "@/services/api";
 import { div, p } from "framer-motion/client";
+import Link from "next/link";
 
 interface Profissional {
     id: number;
@@ -33,10 +34,13 @@ export default function ServicosPage() {
         carregarDados();
     }, []);
 
-    const filtrados = profissionais.filter(p => 
-        p.nome.toLowerCase().includes(busca.toLowerCase()) ||
-        p.profissao.toLowerCase().includes(busca.toLowerCase())
-    );
+    const profissionaisFiltrados = profissionais.filter((prof) => {
+        const nome = (prof.nome || "").toLowerCase();
+        const profissao = (prof.profissao || "").toLowerCase();
+        const termoBusca = (busca || "").toLowerCase();
+
+        return nome.includes(termoBusca) || profissao.includes(termoBusca)
+    })
 
     return (
         <div className="min-h-screen bg-gray-50 pt-8 pb-12 px-4">
@@ -65,7 +69,7 @@ export default function ServicosPage() {
 
                 {/* LISTA DE CARDS */}
                 <div className="grid gap-4">
-                    {filtrados.map((prof) => (
+                    {profissionaisFiltrados.map((prof) => (
                     <div key={prof.id} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border 
                                                       border-gray-100 flex flex-col md:flex-row gap-6 items-center">
 
@@ -83,13 +87,15 @@ export default function ServicosPage() {
                             <span className="flex items-center gap-1"><MapPin size={14}/> {prof.cidade}</span>
                             <span className="font-bold text-gray-700">R$ {prof.precoHora}/hora</span>
                         </div>
-                        <button className="bg-[#2A9D8F] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#21867a]">
+                        <Link href={`/servicos/${prof.id}`}>
+                        <button className="bg-[#2A9D8F] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#21867a] transition">
                             Ver Perfil
                         </button>
+                        </Link>
                     </div>
                     ))}
                     {/* Se não achar nada */}
-                    {!loading && filtrados.length === 0 && (
+                    {!loading && profissionaisFiltrados.length === 0 && (
                         <p className="text-center text-gray-400 mt-10">Nenhum profissional encontrado.</p>
                     )}
                 </div>

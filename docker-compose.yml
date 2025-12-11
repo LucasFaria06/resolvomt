@@ -3,30 +3,28 @@ version: '3.8'
 services:
   db:
     image: postgres:15-alpine
-    container_name: resolvomt-db
+    container_name: resolvomt
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: resolvomt
     ports:
-      - "5433:5432" 
+      - "5432:5432" 
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    # AQUI ESTAVA O PROBLEMA!
-    # Adicionamos 'build' para ele saber onde está o Dockerfile e o código novo
     build: ./api
     image: resolvomt-backend:latest 
     container_name: resolvomt-api
     ports:
-      - "8080:8080" # Voltei para 8080 para casar com seu Postman
+      - "8081:8080" 
     depends_on:
       - db 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/resolvomt
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_PASSWORD: postgres
 
 volumes:
   postgres_data:

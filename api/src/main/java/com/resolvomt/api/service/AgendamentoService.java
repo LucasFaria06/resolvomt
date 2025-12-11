@@ -1,6 +1,10 @@
 package com.resolvomt.api.service;
 
-import java.util.List; 
+import java.util.List;
+
+import com.resolvomt.api.dto.AgendamentoRequest; 
+import com.resolvomt.api.model.Usuario;             
+import com.resolvomt.api.repository.UsuarioRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +17,31 @@ public class AgendamentoService {
     @Autowired
     private AgendamentoRepository repository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public List<Agendamento> listarTodos() {
         return repository.findAll();
     }
 
-    public Agendamento cadastrar(Agendamento agendamento) {
+    public Agendamento criar(AgendamentoRequest dto) {
+        
+        Usuario cliente = usuarioRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado id: " + dto.getClienteId()));
+
+        Usuario prestador = usuarioRepository.findById(dto.getPrestadorId())
+                .orElseThrow(() -> new RuntimeException("Prestador não encontrado id: " + dto.getPrestadorId()));
+
+        Agendamento agendamento = new Agendamento();
+        agendamento.setCliente(cliente);
+        agendamento.setPrestador(prestador);
+        agendamento.setDataServico(dto.getDataServico());
+        agendamento.setValorTotal(dto.getValorTotal());
+        
+        agendamento.setDescricao(dto.getDescricao()); 
+        
+        agendamento.setStatus("PENDENTE");
+
         return repository.save(agendamento);
     }
     
@@ -33,6 +57,6 @@ public class AgendamentoService {
             throw new RuntimeException("Não é possível cancelar agendamentos que não estão PENDENTES.");
         }
         
-            repository.delete(agendamento);
+        repository.delete(agendamento);
     }
 }
