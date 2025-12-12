@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.resolvomt.api.dto.UsuarioCreateRequest;
-import com.resolvomt.api.dto.UsuarioResponse;
+import com.resolvomt.api.dto.UsuarioCreateRequestDTO;
+import com.resolvomt.api.dto.UsuarioResponseDTO;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.service.UsuarioService;
 
@@ -25,11 +25,11 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody @Valid UsuarioCreateRequest request) {
+    public ResponseEntity<UsuarioResponseDTO> cadastrar(@RequestBody @Valid UsuarioCreateRequestDTO request) {
         Usuario novoUsuario = service.cadastrar(request);
 
         return ResponseEntity
-               .status(HttpStatus.CREATED)
-               .body(new UsuarioResponse(novoUsuario));
+                .status(HttpStatus.CREATED)
+                .body(new UsuarioResponseDTO(novoUsuario));
     }
 }

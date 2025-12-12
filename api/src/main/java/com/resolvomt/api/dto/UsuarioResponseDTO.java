@@ -7,7 +7,7 @@ import lombok.Getter;
 
 
 @Getter
-public class UsuarioResponse {
+public class UsuarioResponseDTO {
     
     private Long id;
     private String nomeCompleto;
@@ -15,7 +15,7 @@ public class UsuarioResponse {
     private LocalDateTime dataCadastro;
     private String tipoUsuario;
 
-    public UsuarioResponse(Usuario usuario) {
+    public UsuarioResponseDTO(Usuario usuario) {
         this.id = usuario.getId();
         this.nomeCompleto = usuario.getNomeCompleto();
         this.email = usuario.getEmail();

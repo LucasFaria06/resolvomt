@@ -1,6 +1,6 @@
 package com.resolvomt.api.service;
 
-import com.resolvomt.api.dto.UsuarioCreateRequest;
+import com.resolvomt.api.dto.UsuarioCreateRequestDTO;
 import com.resolvomt.api.enums.TipoUsuario;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
@@ -12,24 +12,24 @@ import org.springframework.stereotype.Service;
 public class UsuarioService {
 
    private final UsuarioRepository repository;
-   private final PasswordEncoder PasswordEncoder;
+   private final PasswordEncoder passwordEncoder;
 
    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
     this.repository = repository;
-    this.PasswordEncoder = passwordEncoder;
+    this.passwordEncoder = passwordEncoder;
    }
 
-   public Usuario cadastrar(UsuarioCreateRequest request) {
+   public Usuario cadastrar(UsuarioCreateRequestDTO request) {
 
     if (repository.existsByEmail(request.getEmail())) {
         throw new IllegalArgumentException("E-mail já está em uso.");
     }
 
     Usuario usuario = new Usuario();
-    usuario.setNomeCompleto(request.getNome());
+    usuario.setNomeCompleto(request.getNomeCompleto());
     usuario.setEmail(request.getEmail());
-    usuario.setSenha(PasswordEncoder.encode(request.getSenha()));
-    usuario.setTipoUsuario(TipoUsuario.USER);
+    usuario.setSenha(passwordEncoder.encode(request.getSenha()));
+    usuario.setTipoUsuario(TipoUsuario.CLIENTE);
 
     return repository.save(usuario);
    }
