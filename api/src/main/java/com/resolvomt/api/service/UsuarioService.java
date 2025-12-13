@@ -1,6 +1,6 @@
 package com.resolvomt.api.service;
 
-import com.resolvomt.api.dto.UsuarioCreateRequestDTO;
+import com.resolvomt.api.dto.usuario.UsuarioCreateRequestDTO;
 import com.resolvomt.api.enums.TipoUsuario;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
@@ -29,7 +29,7 @@ public class UsuarioService {
     usuario.setNomeCompleto(request.getNomeCompleto());
     usuario.setEmail(request.getEmail());
     usuario.setSenha(passwordEncoder.encode(request.getSenha()));
-    usuario.setTipoUsuario(TipoUsuario.CLIENTE);
+    usuario.setTipoUsuario(request.getTipoUsuario());
 
     return repository.save(usuario);
    }

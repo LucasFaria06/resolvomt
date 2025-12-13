@@ -1,4 +1,4 @@
-package com.resolvomt.api.dto;
+package com.resolvomt.api.dto.usuario;
 
 import java.time.LocalDateTime;
 import com.resolvomt.api.model.Usuario;

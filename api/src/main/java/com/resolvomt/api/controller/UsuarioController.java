@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.resolvomt.api.dto.UsuarioCreateRequestDTO;
-import com.resolvomt.api.dto.UsuarioResponseDTO;
+import com.resolvomt.api.dto.usuario.UsuarioCreateRequestDTO;
+import com.resolvomt.api.dto.usuario.UsuarioResponseDTO;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.service.UsuarioService;
 
