@@ -1,9 +1,9 @@
-package com.resolvomt.api.dto;
+package com.resolvomt.api.dto.prestador;
 
 public record PrestadorCreateDTO(
     String nome,
-    String cpf,
     String email,
     String telefone,
+    String cpf,
     String endereco
 ) {}

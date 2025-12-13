@@ -27,6 +27,9 @@ public class Prestador {
 
     private String endereco;
 
+    @Column(nullable = false)
+    private Boolean prestadorVerificado;
+
     @Enumerated(EnumType.STRING)
     private VerificacaoStatus verificacaoIdentidadeStatus = VerificacaoStatus.PENDING;
 
@@ -36,7 +39,6 @@ public class Prestador {
     private LocalDateTime verificacaoIdentidadeData;
     private LocalDateTime verificacaoCriminalData;
 
-    private Boolean prestadorVerificado = false;
     private VerificacaoStatus verificacaoStatus;
 
     public Prestador() {
@@ -141,4 +143,6 @@ public class Prestador {
         this.verificacaoStatus = verificacaoStatus;
     }
 
+    public void setPrestadorVerificado(boolean b) {
+    }
 }

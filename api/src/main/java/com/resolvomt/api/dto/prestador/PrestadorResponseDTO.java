@@ -1,4 +1,4 @@
-package com.resolvomt.api.dto;
+package com.resolvomt.api.dto.prestador;
 
 import com.resolvomt.api.enums.VerificacaoStatus;
 
