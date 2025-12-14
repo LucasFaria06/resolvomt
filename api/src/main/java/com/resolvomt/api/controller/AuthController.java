@@ -3,6 +3,7 @@ package com.resolvomt.api.controller;
 import com.resolvomt.api.dto.cliente.ClienteRegisterRequestDTO;
 import com.resolvomt.api.dto.jwt.JwtResponseDTO;
 import com.resolvomt.api.dto.jwt.LoginRequestDTO;
+import com.resolvomt.api.dto.prestador.PrestadorRegisterRequestDTO;
 import com.resolvomt.api.model.Cliente;
 import com.resolvomt.api.security.JwtTokenProvider;
 import com.resolvomt.api.service.ClienteService;
@@ -68,5 +69,12 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar cliente!");
         }
+    }
+
+    @PostMapping("/register/prestador")
+    public ResponseEntity<?> registerPrestador(@RequestBody PrestadorRegisterRequestDTO dto){
+        prestadorService.registrar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Prestador registrado com sucesso!");
     }
 }

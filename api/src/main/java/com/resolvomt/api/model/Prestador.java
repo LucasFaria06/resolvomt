@@ -1,11 +1,6 @@
 package com.resolvomt.api.model;
 
-import com.resolvomt.api.enums.VerificacaoStatus;
 import jakarta.persistence.*;
-
-
-import java.time.LocalDateTime;
-
 
 @Entity
 @Table(name = "prestadores")
@@ -15,80 +10,40 @@ public class Prestador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
-
-    @Column(unique = true)
-    private String cpf;
-
-    @Column(unique = true)
-    private String email;
-
-    private String telefone;
-
-    private String endereco;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
 
     @Column(nullable = false)
-    private Boolean prestadorVerificado;
+    private String cnpj;
 
-    @Enumerated(EnumType.STRING)
-    private VerificacaoStatus verificacaoIdentidadeStatus = VerificacaoStatus.PENDING;
+    @Column(nullable = false)
+    private String telefone;
 
-    @Enumerated(EnumType.STRING)
-    private VerificacaoStatus verificacaoCriminalStatus = VerificacaoStatus.PENDING;
+    @Column(nullable = false)
+    private boolean verificado = false;
 
-    private LocalDateTime verificacaoIdentidadeData;
-    private LocalDateTime verificacaoCriminalData;
+    @Column(nullable = false)
+    private boolean ativo = true;
 
-    private VerificacaoStatus verificacaoStatus;
-
-    public Prestador() {
-    }
-
-    public void atualizarStatusVerificado() {
-
-        this.prestadorVerificado =
-                verificacaoIdentidadeStatus == verificacaoStatus.APPROVED &&
-                        verificacaoCriminalStatus == verificacaoStatus.APPROVED;
-    }
-
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public String getNome(){
-        return nome;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getCnpj() {
+        return cnpj;
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getTelefone() {
@@ -99,50 +54,19 @@ public class Prestador {
         this.telefone = telefone;
     }
 
-    public VerificacaoStatus getVerificacaoIdentidadeStatus() {
-        return verificacaoIdentidadeStatus;
+    public boolean isVerificado() {
+        return verificado;
     }
 
-    public void setVerificacaoIdentidadeStatus(VerificacaoStatus verificacaoIdentidadeStatus) {
-        this.verificacaoIdentidadeStatus = verificacaoIdentidadeStatus;
+    public void setVerificado(boolean verificado) {
+        this.verificado = verificado;
     }
 
-    public LocalDateTime getVerificacaoCriminalData() {
-        return verificacaoCriminalData;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public void setVerificacaoCriminalData(LocalDateTime verificacaoCriminalData) {
-        this.verificacaoCriminalData = verificacaoCriminalData;
-    }
-
-    public VerificacaoStatus getVerificacaoCriminalStatus() {
-        return verificacaoCriminalStatus;
-    }
-
-    public void setVerificacaoCriminalStatus(VerificacaoStatus verificacaoCriminalStatus) {
-        this.verificacaoCriminalStatus = verificacaoCriminalStatus;
-    }
-
-    public LocalDateTime getVerificacaoIdentidadeData() {
-        return verificacaoIdentidadeData;
-    }
-
-    public void setVerificacaoIdentidadeData(LocalDateTime verificacaoIdentidadeData) {
-        this.verificacaoIdentidadeData = verificacaoIdentidadeData;
-    }
-
-    public Boolean getPrestadorVerificado() {
-        return prestadorVerificado;
-    }
-
-    public VerificacaoStatus getVerificacaoStatus() {
-        return verificacaoStatus;
-    }
-
-    public void setVerificacaoStatus(VerificacaoStatus verificacaoStatus) {
-        this.verificacaoStatus = verificacaoStatus;
-    }
-
-    public void setPrestadorVerificado(boolean b) {
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

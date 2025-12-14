@@ -1,19 +1,24 @@
 package com.resolvomt.api.dto.prestador;
 
-import com.resolvomt.api.enums.VerificacaoStatus;
-
-import java.time.LocalDateTime;
+import com.resolvomt.api.dto.usuario.UsuarioSimplificadoDTO;
+import com.resolvomt.api.model.Prestador;
 
 public record PrestadorResponseDTO(
         Long id,
-        String nome,
-        String cpf,
-        String email,
+        String cnpj,
         String telefone,
-        String endereco,
-        VerificacaoStatus verificacaoIdentidadeStatus,
-        VerificacaoStatus verificacaoCriminalStatus,
-        Boolean prestadorVerificado,
-        LocalDateTime verificacaoIdentidadeData,
-        LocalDateTime verificacaoCriminalData
-) {}
+        boolean verificado,
+        boolean ativo,
+        UsuarioSimplificadoDTO usuario
+) {
+    public PrestadorResponseDTO(Prestador prestador) {
+        this(
+                prestador.getId(),
+                prestador.getCnpj(),
+                prestador.getTelefone(),
+                prestador.isVerificado(),
+                prestador.isAtivo(),
+                new UsuarioSimplificadoDTO(prestador.getUsuario())
+        );
+    }
+}
