@@ -1,11 +1,14 @@
 package com.resolvomt.api.security;
 
+import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -19,7 +22,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com e-mail: " + email));
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getEmail(),
+                usuario.getSenha(),
+                List.of(
+                        new SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name())
+                )
+        );
     }
+
 }

@@ -37,4 +37,10 @@ public class ClienteService {
 
         return clienteRepository.save(cliente);
     }
+
+    public Cliente buscarPorEmailUsuario(String email) {
+        return clienteRepository.findByUsuarioEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    }
+
 }
