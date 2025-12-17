@@ -1,4 +1,4 @@
-package com.resolvomt.api.controller;
+package com.resolvomt.api.controller.usuario;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

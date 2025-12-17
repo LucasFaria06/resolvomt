@@ -1,4 +1,4 @@
-package com.resolvomt.api.controller;
+package com.resolvomt.api.controller.cliente;
 
 import com.resolvomt.api.dto.cliente.ClienteResponseDTO;
 import com.resolvomt.api.model.Cliente;

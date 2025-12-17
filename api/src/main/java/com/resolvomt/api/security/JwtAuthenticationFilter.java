@@ -37,22 +37,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwt = getJwtFromRequest(request);
 
-        System.out.println("===== DEBUG JWT =====");
-        System.out.println("Token extraído: " + jwt);
-        System.out.println("Token válido? " + (jwt != null && tokenProvider.validateToken(jwt)));
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 
             Claims claims = tokenProvider.getAllClaimsFromJWT(jwt);
             String username = claims.getSubject();
 
-            System.out.println("Username do token: " + username);
-
             UserDetails userDetails =
                     userDetailsService.loadUserByUsername(username);
 
-            System.out.println("UserDetails carregado: " + userDetails.getUsername());
-            System.out.println("Authorities: " + userDetails.getAuthorities());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
@@ -69,11 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .getContext()
                     .setAuthentication(authentication);
 
-            System.out.println("Autenticação setada com sucesso!");
-        } else {
-            System.out.println("Token inválido ou não encontrado");
         }
-
         filterChain.doFilter(request, response);
     }
 

@@ -37,7 +37,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ===== AUTH PROVIDER =====
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -46,7 +45,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // ===== AUTH MANAGER =====
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
@@ -54,12 +52,10 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // ===== SECURITY FILTER CHAIN =====
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // Provider CORRETAMENTE registrado
                 .authenticationProvider(authenticationProvider())
 
                 .csrf(csrf -> csrf.disable())
@@ -72,10 +68,11 @@ public class SecurityConfig {
 
                         // ===== AUTH =====
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register/**").permitAll()
 
                         // ===== PRESTADORES (PÚBLICO) =====
                         .requestMatchers(HttpMethod.GET, "/prestadores/verificados").permitAll()
+                        .requestMatchers((HttpMethod.GET), "/prestadores/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/servicos/**").permitAll()
 
                         // ===== CLIENTE =====
                         .requestMatchers("/api/cliente/**").authenticated()
@@ -84,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/prestador/**").hasRole("PRESTADOR")
 
                         // ===== ADMIN =====
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/prestadores/*/verificacao/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/prestadores").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/prestadores/pendentes-verificacao").hasRole("ADMIN")

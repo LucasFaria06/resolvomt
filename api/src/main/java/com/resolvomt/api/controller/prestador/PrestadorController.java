@@ -1,4 +1,4 @@
-package com.resolvomt.api.controller;
+package com.resolvomt.api.controller.prestador;
 
 import com.resolvomt.api.dto.prestador.PrestadorResponseDTO;
 import com.resolvomt.api.model.Prestador;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/prestadores")
+@RequestMapping("/api/prestador")
 public class PrestadorController {
 
     private final PrestadorService prestadorService;

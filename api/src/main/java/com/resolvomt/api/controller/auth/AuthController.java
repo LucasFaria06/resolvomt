@@ -1,4 +1,4 @@
-package com.resolvomt.api.controller;
+package com.resolvomt.api.controller.auth;
 
 import com.resolvomt.api.dto.cliente.ClienteRegisterRequestDTO;
 import com.resolvomt.api.dto.jwt.JwtResponseDTO;
@@ -7,6 +7,7 @@ import com.resolvomt.api.dto.prestador.PrestadorRegisterRequestDTO;
 import com.resolvomt.api.model.Cliente;
 import com.resolvomt.api.security.JwtTokenProvider;
 import com.resolvomt.api.service.ClienteService;
+import com.resolvomt.api.service.PrestadorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,11 +27,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final ClienteService clienteService;
+    private final PrestadorService prestadorService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, ClienteService clienteService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, ClienteService clienteService, PrestadorService prestadorService) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.clienteService = clienteService;
+        this.prestadorService = prestadorService;
     }
 
     @PostMapping("/login")

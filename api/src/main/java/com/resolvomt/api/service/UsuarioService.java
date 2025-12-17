@@ -33,4 +33,10 @@ public class UsuarioService {
 
     return repository.save(usuario);
    }
+
+    public Usuario buscarPorEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
 }
