@@ -15,6 +15,7 @@ public class PrestadorPublicController {
     private final PrestadorService prestadorService;
 
     public PrestadorPublicController(PrestadorService prestadorService) {
+
         this.prestadorService = prestadorService;
     }
     @GetMapping("/verificados")

@@ -5,20 +5,25 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "mensagens")
 public class Mensagem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+
+    @ManyToOne (optional = false)
+    @JoinColumn(name = "conversa_id", nullable = false)
     private Conversa conversa;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String conteudo;
 
+    @Column(name = "enviada_em", nullable = false)
     private LocalDateTime enviadaEm;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "remetente_id", nullable = false)
     private Usuario remetente;
 

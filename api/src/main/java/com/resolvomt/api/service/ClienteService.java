@@ -19,7 +19,7 @@ public class ClienteService {
         this.usuarioService = usuarioService;
     }
 
-    public Cliente registrar (ClienteRegisterRequestDTO dto) {
+    public Cliente registrar(ClienteRegisterRequestDTO dto) {
 
         UsuarioCreateRequestDTO usuarioRequest = new UsuarioCreateRequestDTO();
         usuarioRequest.setNomeCompleto(dto.nomeCompleto());
@@ -27,12 +27,14 @@ public class ClienteService {
         usuarioRequest.setSenha(dto.senha());
         usuarioRequest.setTipoUsuario(TipoUsuario.CLIENTE);
 
-
         Usuario usuarioCriado = usuarioService.cadastrar(usuarioRequest);
 
         Cliente cliente = new Cliente();
         cliente.setUsuario(usuarioCriado);
-        cliente.setCpf(dto.cpf());
+
+        String cpfLimpo = dto.cpf().replaceAll("\\D", "");
+        cliente.setCpf(cpfLimpo);
+
         cliente.setTelefone(dto.telefone());
 
         return clienteRepository.save(cliente);

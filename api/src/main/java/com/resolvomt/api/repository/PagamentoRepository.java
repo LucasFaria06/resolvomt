@@ -18,5 +18,6 @@ public interface PagamentoRepository extends JpaRepository<Pagamento, Long> {
       AND MONTH(p.pagoEm) = MONTH(CURRENT_DATE)
       AND YEAR(p.pagoEm) = YEAR(CURRENT DATE )
 """)
+
         BigDecimal calcularMRRMensal();
 }

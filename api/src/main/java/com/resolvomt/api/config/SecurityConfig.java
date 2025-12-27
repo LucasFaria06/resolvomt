@@ -31,7 +31,6 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // ===== PASSWORD ENCODER =====
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -66,21 +65,22 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ===== AUTH =====
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 
-                        // ===== PRESTADORES (PÚBLICO) =====
                         .requestMatchers(HttpMethod.GET, "/prestadores/verificados").permitAll()
                         .requestMatchers((HttpMethod.GET), "/prestadores/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/servicos/**").permitAll()
 
-                        // ===== CLIENTE =====
                         .requestMatchers("/api/cliente/**").authenticated()
 
-                        // ===== PRESTADOR =====
                         .requestMatchers("/api/prestador/**").hasRole("PRESTADOR")
 
-                        // ===== ADMIN =====
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/prestadores/*/verificacao/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/prestadores").hasRole("ADMIN")
@@ -88,6 +88,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/prestadores/*").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
+
                 );
 
         http.addFilterBefore(

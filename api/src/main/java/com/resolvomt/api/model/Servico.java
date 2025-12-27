@@ -28,25 +28,26 @@ public class Servico {
     @Column(nullable = false)
     private Integer duracaoMinutos;
 
-    public Long getId() {  return id;}
+    @Column(nullable = false)
+    private boolean ativo = true;
 
-    public Prestador getPrestador() { return prestador;}
+    public Long getId() { return id; }
 
-    public void setPrestador(Prestador prestador) { this.prestador = prestador;}
+    public Prestador getPrestador() { return prestador; }
+    public void setPrestador(Prestador prestador) { this.prestador = prestador; }
 
-    public String getNome() { return nome;}
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setNome(String nome) { this.nome = nome;}
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public String getDescricao() { return descricao;}
+    public BigDecimal getValor() { return valor; }
+    public void setValor(BigDecimal valor) { this.valor = valor; }
 
-    public void setDescricao(String descricao) { this.descricao = descricao;}
+    public Integer getDuracaoMinutos() { return duracaoMinutos; }
+    public void setDuracaoMinutos(Integer duracaoMinutos) { this.duracaoMinutos = duracaoMinutos; }
 
-    public BigDecimal getValor() { return valor;}
-
-    public void setValor(BigDecimal valor) { this.valor = valor;}
-
-    public Integer getDuracaoMinutos() { return duracaoMinutos;}
-
-    public void setDuracaoMinutos(Integer duracaoMinutos) { this.duracaoMinutos = duracaoMinutos;}
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 }

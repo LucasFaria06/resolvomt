@@ -8,6 +8,7 @@ import com.resolvomt.api.model.Cliente;
 import com.resolvomt.api.security.JwtTokenProvider;
 import com.resolvomt.api.service.ClienteService;
 import com.resolvomt.api.service.PrestadorService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/client")
-    public ResponseEntity<?> registerClient(@RequestBody ClienteRegisterRequestDTO dto) {
+    public ResponseEntity<?> registerClient(@Valid @RequestBody ClienteRegisterRequestDTO dto) {
         try {
             Cliente novoCliente = clienteService.registrar(dto);
 
@@ -69,8 +70,6 @@ public class AuthController {
             );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar cliente!");
         }
     }
 

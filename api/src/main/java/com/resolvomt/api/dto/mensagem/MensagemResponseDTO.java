@@ -8,14 +8,16 @@ public record MensagemResponseDTO (
         Long id,
         String conteudo,
         String remetente,
-        LocalDateTime enviadaEm
+        LocalDateTime enviadaEm,
+        boolean lida
 ) {
     public MensagemResponseDTO(Mensagem m){
         this(
                 m.getId(),
                 m.getConteudo(),
                 m.getRemetente().getNomeCompleto(),
-                m.getEnviadaEm()
+                m.getEnviadaEm(),
+                m.isLida()
         );
     }
 }

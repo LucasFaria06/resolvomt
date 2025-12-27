@@ -4,11 +4,13 @@ import com.resolvomt.api.enums.StatusAssinatura;
 import com.resolvomt.api.model.Pagamento;
 import com.resolvomt.api.model.Prestador;
 import com.resolvomt.api.repository.PagamentoRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Service
 public class PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;

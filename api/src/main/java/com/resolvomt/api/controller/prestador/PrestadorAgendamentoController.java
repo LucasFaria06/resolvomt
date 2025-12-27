@@ -25,13 +25,13 @@ public class PrestadorAgendamentoController {
                 .toList();
     }
 
-    @PatchMapping("/{id}/comfirmar")
-    public void confirmar(@PathVariable Long id) {
-        agendamentoService.confirmar(id);
+    @PatchMapping("/{id}/confirmar")
+    public void confirmar(@PathVariable Long id, Authentication auth) {
+        agendamentoService.confirmar(id, auth.getName());
     }
 
     @PatchMapping("/{id}/cancelar")
-    public void cancelar(@PathVariable Long id) {
-        agendamentoService.cancelar(id);
+    public void cancelar(@PathVariable Long id, Authentication auth) {
+        agendamentoService.cancelar(id, auth.getName());
     }
 }

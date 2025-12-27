@@ -1,12 +1,12 @@
 package com.resolvomt.api.model;
 
-import com.resolvomt.api.service.AgendamentoService;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "conversas")
 public class Conversa {
 
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,10 +15,10 @@ public class Conversa {
     @OneToOne
     private Agendamento agendamento;
 
-    @OneToMany(mappedBy = "conversa", cascade = CascadeType.ALL)
-    private List<Mensagem> mensgens;
+    @OneToMany(mappedBy = "conversa", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mensagem> mensagens;
 
-    private LocalDateTime criadaEm;
+    private LocalDateTime criadaEm = LocalDateTime.now();
 
     public Long getId() { return id; }
 
@@ -28,9 +28,9 @@ public class Conversa {
 
     public void setAgendamento(Agendamento agendamento) { this.agendamento = agendamento; }
 
-    public List<Mensagem> getMensgens() { return mensgens; }
+    public List<Mensagem> getMensagens() { return mensagens; }
 
-    public void setMensgens(List<Mensagem> mensgens) { this.mensgens = mensgens; }
+    public void setMensagens(List<Mensagem> mensagens) { this.mensagens = mensagens; }
 
     public LocalDateTime getCriadaEm() { return criadaEm; }
 

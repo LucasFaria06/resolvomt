@@ -37,7 +37,37 @@ public class ServicoService {
         return servicoRepository.findByPrestadorId(prestador.getId());
     }
 
-    public void excluir(Long id) {
-        servicoRepository.deleteById(id);
+    public void desativar(Long id, String emailPrestador) {
+        Prestador prestador = prestadorService.buscarPorEmailUsuario(emailPrestador);
+
+        Servico servico = servicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Serviço não encontrado!"));
+
+        if (!servico.getPrestador().getId().equals(prestador.getId())) {
+            throw new RuntimeException("Você não pode alterar esse serviço!");
+        }
+
+        servico.setAtivo(false);
+        servicoRepository.save(servico);
+        }
+
+    public void ativarServico(Long id, String emailPrestador) {
+        Prestador prestador = prestadorService.buscarPorEmailUsuario(emailPrestador);
+
+        Servico servico = servicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+
+        if (!servico.getPrestador().getId().equals(prestador.getId())) {
+            throw new RuntimeException("Você não pode alterar este serviço");
+        }
+
+        servico.setAtivo(true);
+        servicoRepository.save(servico);
+    }
+
+    public List<Servico> listarServicosPublicos() {
+        return servicoRepository
+                .findByAtivoTrueAndPrestadorVerificadoTrueAndPrestadorAtivoTrue();
     }
 }
+

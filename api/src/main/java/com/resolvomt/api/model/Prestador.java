@@ -15,6 +15,9 @@ public class Prestador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String nome;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
@@ -45,11 +48,15 @@ public class Prestador {
     @Column(name = "assinatura_ate")
     private LocalDate assinaturaAte;
 
-    // ========== GETTERS E SETTERS ========== //
-
     public Long getId() {
         return id;
     }
+
+    public String getNome() { return nome; }
+
+    // ======================================== //
+
+    public void setNome(String nome) { this.nome = nome; }
 
     public Usuario getUsuario() {
         return usuario;
