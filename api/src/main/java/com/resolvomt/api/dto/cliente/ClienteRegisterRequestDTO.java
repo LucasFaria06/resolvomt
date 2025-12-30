@@ -1,7 +1,7 @@
 package com.resolvomt.api.dto.cliente;
 
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.br.CPF;
+import com.resolvomt.api.validation.ValidCpf;
 
 public record ClienteRegisterRequestDTO(
 
@@ -18,8 +18,7 @@ public record ClienteRegisterRequestDTO(
         String senha,
 
         @NotBlank(message = "CPF é obrigatório")
-        @Pattern(regexp = "\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}",
-                message = "CPF inválido")
+        @ValidCpf
         String cpf,
 
         String telefone

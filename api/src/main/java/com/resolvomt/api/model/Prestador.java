@@ -5,7 +5,6 @@ import com.resolvomt.api.enums.StatusAssinatura;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "prestadores")
@@ -29,18 +28,18 @@ public class Prestador {
     private String telefone;
 
     @Column(nullable = false)
-    private boolean verificado = false;
+    private boolean verificado;
 
     @Column(nullable = false)
-    private boolean ativo = true;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PlanoPrestador plano = PlanoPrestador.FREE;
+    private boolean ativo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusAssinatura statusAssinatura = StatusAssinatura.TRIAL;
+    private PlanoPrestador plano;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusAssinatura statusAssinatura;
 
     @Column(name = "trial_ate")
     private LocalDate trialAte;
@@ -48,69 +47,26 @@ public class Prestador {
     @Column(name = "assinatura_ate")
     private LocalDate assinaturaAte;
 
-    public Long getId() {
-        return id;
-    }
-
+    public Long getId() { return id; }
     public String getNome() { return nome; }
-
-    // ======================================== //
+    public Usuario getUsuario() { return usuario; }
+    public String getCnpj() { return cnpj; }
+    public String getTelefone() { return telefone; }
+    public boolean isVerificado() { return verificado; }
+    public boolean isAtivo() { return ativo; }
+    public PlanoPrestador getPlano() { return plano; }
+    public StatusAssinatura getStatusAssinatura() { return statusAssinatura; }
+    public LocalDate getTrialAte() { return trialAte; }
+    public LocalDate getAssinaturaAte() { return assinaturaAte; }
 
     public void setNome(String nome) { this.nome = nome; }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public boolean isVerificado() {
-        return verificado;
-    }
-
-    public void setVerificado(boolean verificado) {
-        this.verificado = verificado;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public PlanoPrestador getPlano() { return plano;}
-
-    public void setPlano(PlanoPrestador plano) { this.plano = plano;}
-
-    public StatusAssinatura getStatusAssinatura() { return statusAssinatura;}
-
-    public void setStatusAssinatura(StatusAssinatura statusAssinatura) { this.statusAssinatura = statusAssinatura;}
-
-    public LocalDate getTrialAte() { return trialAte;}
-
-    public void setTrialAte(LocalDate trialAte) { this.trialAte = trialAte;}
-
-    public LocalDate getAssinaturaAte() { return assinaturaAte;}
-
-    public void setAssinaturaAte(LocalDate assinaturaAte) { this.assinaturaAte = assinaturaAte;}
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public void setVerificado(boolean verificado) { this.verificado = verificado; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    public void setPlano(PlanoPrestador plano) { this.plano = plano; }
+    public void setStatusAssinatura(StatusAssinatura statusAssinatura) { this.statusAssinatura = statusAssinatura; }
+    public void setTrialAte(LocalDate trialAte) { this.trialAte = trialAte; }
+    public void setAssinaturaAte(LocalDate assinaturaAte) { this.assinaturaAte = assinaturaAte; }
 }

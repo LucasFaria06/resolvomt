@@ -10,22 +10,25 @@ import java.util.Optional;
 public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
 
     @Query("""
-    select p from Prestador p 
-    join fetch p.usuario
-    where p.usuario.email = :email
+        select p from Prestador p
+        join fetch p.usuario
+        where p.verificado = false
     """)
-    // ====== USO GERAL ====== //
+    List<Prestador> buscarPendentes();
+
+    @Query("""
+        select p from Prestador p
+        join fetch p.usuario
+        where p.verificado = true
+    """)
+    List<Prestador> listarVerificados();
+
+    @Query("""
+        select p from Prestador p
+        join fetch p.usuario u
+        where u.email = :email
+    """)
     Optional<Prestador> findByUsuarioEmail(String email);
-
-    // ====== PÚBLICO ====== //
-    List<Prestador> findByVerificadoTrueAndAtivoTrue();
-
-    // ====== ADMIN ====== //
-    List<Prestador> findByVerificadoFalse();
-
-    List<Prestador> findByAtivoTrue();
-
-    List<Prestador> findByAtivoFalse();
 
     boolean existsByCnpj(String cnpj);
 }

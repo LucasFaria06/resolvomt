@@ -1,6 +1,7 @@
 package com.resolvomt.api.service;
 
 import com.resolvomt.api.dto.prestador.PrestadorRegisterRequestDTO;
+import com.resolvomt.api.dto.prestador.PrestadorResponseDTO;
 import com.resolvomt.api.dto.usuario.UsuarioCreateRequestDTO;
 import com.resolvomt.api.enums.PlanoPrestador;
 import com.resolvomt.api.enums.StatusAssinatura;
@@ -8,12 +9,11 @@ import com.resolvomt.api.enums.TipoUsuario;
 import com.resolvomt.api.model.Prestador;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.PrestadorRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Service
 public class PrestadorService {
@@ -21,18 +21,22 @@ public class PrestadorService {
     private final PrestadorRepository prestadorRepository;
     private final UsuarioService usuarioService;
 
-    public PrestadorService(PrestadorRepository prestadorRepository, UsuarioService usuarioService) {
+    public PrestadorService(
+            PrestadorRepository prestadorRepository,
+            UsuarioService usuarioService
+    ) {
         this.prestadorRepository = prestadorRepository;
         this.usuarioService = usuarioService;
     }
 
-    // ================ REGISTRO ================ //
-    @Transactional
     public Prestador registrar(PrestadorRegisterRequestDTO dto) {
 
-        if (prestadorRepository.existsByCnpj(dto.cnpj())){
-            throw new RuntimeException(dto.nomeCompleto());
+        String cnpjLimpo = dto.cnpj().replaceAll("\\D", "");
+
+        if (prestadorRepository.existsByCnpj(cnpjLimpo)) {
+            throw new IllegalArgumentException("CNPJ já cadastrado");
         }
+
         UsuarioCreateRequestDTO usuarioRequest = new UsuarioCreateRequestDTO();
         usuarioRequest.setNomeCompleto(dto.nomeCompleto());
         usuarioRequest.setEmail(dto.email());
@@ -43,50 +47,15 @@ public class PrestadorService {
 
         Prestador prestador = new Prestador();
         prestador.setUsuario(usuarioCriado);
-        prestador.setCnpj(dto.cnpj());
+        prestador.setNome(dto.nome());
+        prestador.setCnpj(cnpjLimpo);
         prestador.setTelefone(dto.telefone());
         prestador.setVerificado(false);
         prestador.setAtivo(true);
         prestador.setPlano(PlanoPrestador.FREE);
         prestador.setStatusAssinatura(StatusAssinatura.TRIAL);
-        prestador.setTrialAte(LocalDate.now().plusDays(30));
-        prestador.setAssinaturaAte(null);
+        prestador.setTrialAte(LocalDate.now().plusDays(7));
 
-        return prestadorRepository.save(prestador);
-    }
-
-    // =============== PRESTADOR LOGADO =============== //
-    public Prestador buscarPorEmailUsuario(String email) {
-        return prestadorRepository.findByUsuarioEmail(email)
-                .orElseThrow(() -> new RuntimeException("Prestador não encontrado!"));
-    }
-
-    // ================== ADMIN ===================== //
-    public Prestador aprovarPrestador(Long id){
-        Prestador prestador = prestadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
-        prestador.setVerificado(true);
-        return prestadorRepository.save(prestador);
-    }
-
-    public Prestador reprovarPrestador(Long id) {
-        Prestador prestador = buscarPorId(id);
-        prestador.setVerificado(false);
-        prestador.setAtivo(false);
-        return prestadorRepository.save(prestador);
-    }
-
-    public Prestador ativarPrestador(Long id) {
-        Prestador prestador = prestadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
-        prestador.setAtivo(true);
-        return prestadorRepository.save(prestador);
-    }
-
-    public Prestador inativarPrestador(Long id) {
-        Prestador prestador = prestadorRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
-        prestador.setAtivo(false);
         return prestadorRepository.save(prestador);
     }
 
@@ -95,16 +64,52 @@ public class PrestadorService {
                 .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
     }
 
-    public List<Prestador> listarVerificados() {
-        return prestadorRepository.findByVerificadoTrueAndAtivoTrue();
+    public Prestador buscarPorEmailUsuario(String email) {
+        return prestadorRepository.findByUsuarioEmail(email)
+                .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
     }
 
-    public List<Prestador> listarPendentesVerificacao() {
-        return prestadorRepository.findByVerificadoFalse();
+    @Transactional(readOnly = true)
+    public List<PrestadorResponseDTO> listarPendentesVerificacao() {
+        return prestadorRepository.buscarPendentes()
+                .stream()
+                .map(PrestadorResponseDTO::new)
+                .toList();
     }
 
-    public List<Prestador> listarTodos() {
-        return prestadorRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<PrestadorResponseDTO> listarVerificados() {
+        return prestadorRepository.listarVerificados()
+                .stream()
+                .map(PrestadorResponseDTO::new)
+                .toList();
     }
 
+    @Transactional
+    public Prestador aprovarPrestador(Long id) {
+        Prestador prestador = buscarPorId(id);
+        prestador.setVerificado(true);
+        return prestador;
+    }
+
+    @Transactional
+    public Prestador reprovarPrestador(Long id) {
+        Prestador prestador = buscarPorId(id);
+        prestador.setVerificado(false);
+        return prestador;
+    }
+
+    @Transactional
+    public Prestador ativarPrestador(Long id) {
+        Prestador prestador = buscarPorId(id);
+        prestador.setAtivo(true);
+        return prestador;
+    }
+
+    @Transactional
+    public Prestador inativarPrestador(Long id) {
+        Prestador prestador = buscarPorId(id);
+        prestador.setAtivo(false);
+        return prestador;
+    }
 }

@@ -15,14 +15,11 @@ public class PrestadorPublicController {
     private final PrestadorService prestadorService;
 
     public PrestadorPublicController(PrestadorService prestadorService) {
-
         this.prestadorService = prestadorService;
     }
+
     @GetMapping("/verificados")
     public List<PrestadorResponseDTO> listarVerificados() {
-        return prestadorService.listarVerificados()
-                .stream()
-                .map(PrestadorResponseDTO::new)
-                .toList();
+        return prestadorService.listarVerificados();
     }
 }

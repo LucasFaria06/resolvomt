@@ -6,6 +6,7 @@ import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder; 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -19,6 +20,7 @@ public class UsuarioService {
     this.passwordEncoder = passwordEncoder;
    }
 
+   @Transactional
    public Usuario cadastrar(UsuarioCreateRequestDTO request) {
 
     if (repository.existsByEmail(request.getEmail())) {

@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
         });
 
         response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("message", "Erro de validação nos campos");
         response.put("errors", errors);
 
         return ResponseEntity.badRequest().body(response);
@@ -41,12 +42,15 @@ public class GlobalExceptionHandler {
 
         String message = ex.getMessage();
 
-        if (message != null && message.contains("email")) {
+        if (message != null && message.toLowerCase().contains("email")) {
             response.put("status", HttpStatus.CONFLICT.value());
             response.put("message", "Email já cadastrado");
-        } else if (message != null && message.contains("cpf")) {
+        } else if (message != null && message.toLowerCase().contains("cpf")) {
             response.put("status", HttpStatus.CONFLICT.value());
             response.put("message", "CPF já cadastrado");
+        } else if (message != null && message.toLowerCase().contains("cnpj")) {
+            response.put("status", HttpStatus.CONFLICT.value());
+            response.put("message", "CNPJ já cadastrado");
         } else {
             response.put("status", HttpStatus.BAD_REQUEST.value());
             response.put("message", "Erro de integridade de dados");
@@ -60,17 +64,18 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex) {
 
         Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("status", HttpStatus.CONFLICT.value());
         response.put("message", ex.getMessage());
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    // Trata exceções genéricas (última defesa)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("message", "Erro interno do servidor");
+        response.put("message", "Ocorreu um erro interno inesperado.");
         response.put("details", ex.getMessage());
 
         ex.printStackTrace();

@@ -21,6 +21,12 @@ public class ClienteService {
 
     public Cliente registrar(ClienteRegisterRequestDTO dto) {
 
+        String cpfLimpo = dto.cpf().replaceAll("\\D", "");
+
+        if (clienteRepository.existsByCpf(cpfLimpo)) {
+            throw new IllegalArgumentException("CPF já cadastrado");
+        }
+
         UsuarioCreateRequestDTO usuarioRequest = new UsuarioCreateRequestDTO();
         usuarioRequest.setNomeCompleto(dto.nomeCompleto());
         usuarioRequest.setEmail(dto.email());
@@ -31,10 +37,7 @@ public class ClienteService {
 
         Cliente cliente = new Cliente();
         cliente.setUsuario(usuarioCriado);
-
-        String cpfLimpo = dto.cpf().replaceAll("\\D", "");
         cliente.setCpf(cpfLimpo);
-
         cliente.setTelefone(dto.telefone());
 
         return clienteRepository.save(cliente);
@@ -44,5 +47,4 @@ public class ClienteService {
         return clienteRepository.findByUsuarioEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     }
-
 }

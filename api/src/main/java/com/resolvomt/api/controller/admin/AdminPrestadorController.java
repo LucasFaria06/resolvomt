@@ -1,14 +1,12 @@
 package com.resolvomt.api.controller.admin;
 
 import com.resolvomt.api.dto.prestador.PrestadorResponseDTO;
-import com.resolvomt.api.repository.PrestadorRepository;
 import com.resolvomt.api.service.PrestadorService;
-import jakarta.persistence.PessimisticLockException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.PropertyResourceBundle;
 
 @RestController
 @RequestMapping("/api/admin/prestadores")
@@ -21,46 +19,37 @@ public class AdminPrestadorController {
         this.prestadorService = prestadorService;
     }
 
-    @GetMapping
-    public List<PrestadorResponseDTO> listarTodos() {
-        return prestadorService.listarTodos()
-                .stream()
-                .map(PrestadorResponseDTO::new)
-                .toList();
+    @GetMapping("/pendentes")
+    public List<PrestadorResponseDTO> listarPendentes() {
+        return prestadorService.listarPendentesVerificacao();
     }
 
-    @GetMapping("/pendentes")
-    public List<PrestadorResponseDTO> pendentes() {
-        return prestadorService.listarPendentesVerificacao()
-                .stream()
-                .map(PrestadorResponseDTO::new)
-                .toList();
+    @GetMapping
+    public List<PrestadorResponseDTO> listarVerificados() {
+        return prestadorService.listarVerificados();
     }
 
     @PatchMapping("/{id}/aprovar")
-    public PrestadorResponseDTO aprovar(@PathVariable Long id){
-        return new PrestadorResponseDTO(
-                prestadorService.aprovarPrestador(id)
-        );
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void aprovar(@PathVariable Long id) {
+        prestadorService.aprovarPrestador(id);
     }
 
     @PatchMapping("/{id}/reprovar")
-    public PrestadorResponseDTO reprovar(@PathVariable Long id){
-        return new PrestadorResponseDTO(
-                prestadorService.reprovarPrestador(id)
-        );
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reprovar(@PathVariable Long id) {
+        prestadorService.reprovarPrestador(id);
     }
 
     @PatchMapping("/{id}/ativar")
-    public PrestadorResponseDTO ativar(@PathVariable Long id){
-        return new PrestadorResponseDTO(
-                prestadorService.ativarPrestador(id)
-        );
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void ativar(@PathVariable Long id) {
+        prestadorService.ativarPrestador(id);
     }
+
     @PatchMapping("/{id}/inativar")
-    public PrestadorResponseDTO inativar(@PathVariable Long id){
-        return new PrestadorResponseDTO(
-                prestadorService.inativarPrestador(id)
-        );
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void inativar(@PathVariable Long id) {
+        prestadorService.inativarPrestador(id);
     }
 }

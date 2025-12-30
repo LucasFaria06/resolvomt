@@ -11,6 +11,23 @@ public record PrestadorResponseDTO(
         boolean ativo,
         UsuarioSimplificadoDTO usuario
 ) {
+
+    public PrestadorResponseDTO(
+            Long id,
+            String cnpj,
+            String telefone,
+            boolean verificado,
+            boolean ativo,
+            UsuarioSimplificadoDTO usuario
+    ) {
+        this.id = id;
+        this.cnpj = cnpj;
+        this.telefone = telefone;
+        this.verificado = verificado;
+        this.ativo = ativo;
+        this.usuario = usuario;
+    }
+
     public PrestadorResponseDTO(Prestador prestador) {
         this(
                 prestador.getId(),
@@ -20,5 +37,5 @@ public record PrestadorResponseDTO(
                 prestador.isAtivo(),
                 new UsuarioSimplificadoDTO(prestador.getUsuario())
         );
-    }
+}
 }
