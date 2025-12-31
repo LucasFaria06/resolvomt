@@ -62,33 +62,17 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-
-                        .requestMatchers(HttpMethod.GET, "/prestadores/verificados").permitAll()
-                        .requestMatchers((HttpMethod.GET), "/prestadores/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/prestadores/verificados").permitAll()
+                        .requestMatchers("/servicos/**").permitAll()  // ← ADICIONE ESTA LINHA
+                        .requestMatchers(HttpMethod.GET, "/prestadores/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/servicos/**").permitAll()
-
-                        .requestMatchers("/api/cliente/**").authenticated()
-
+                        .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
                         .requestMatchers("/api/prestador/**").hasRole("PRESTADOR")
-
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/prestadores/*/verificacao/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/prestadores").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/prestadores/pendentes-verificacao").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/prestadores/*").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
-
                 );
 
         http.addFilterBefore(

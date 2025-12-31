@@ -9,7 +9,10 @@ public record ServicoResponseDTO (
         String nome,
         String descricao,
         BigDecimal valor,
-        Integer duracaoMinutos
+        Integer duracaoMinutos,
+        Boolean ativo,
+        Long prestadorId,
+        String prestadorNome
 ) {
     public ServicoResponseDTO(Servico servico) {
         this(
@@ -17,7 +20,10 @@ public record ServicoResponseDTO (
                 servico.getNome(),
                 servico.getDescricao(),
                 servico.getValor(),
-                servico.getDuracaoMinutos()
+                servico.getDuracaoMinutos(),
+                servico.isAtivo(),
+                servico.getPrestador().getId(),
+                servico.getPrestador().getNome()
         );
     }
 }
