@@ -19,4 +19,7 @@ public interface ServicoRepository extends JpaRepository<Servico, Long> {
     @Query("SELECT s FROM Servico s JOIN FETCH s.prestador p " +
             "WHERE p.verificado = true AND p.ativo = true AND s.ativo = true")
     List<Servico> findAllPublicosComPrestador();
+
+    @Query("SELECT s FROM Servico s JOIN FETCH s.prestador WHERE s.id = :id")
+    Optional<Servico> findByIdComPrestador(@Param("id") Long id);
 }

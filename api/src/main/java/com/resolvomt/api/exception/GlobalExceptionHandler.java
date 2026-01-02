@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
@@ -39,24 +39,30 @@ public class GlobalExceptionHandler {
             DataIntegrityViolationException ex) {
 
         Map<String, Object> response = new HashMap<>();
+        String message = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
 
-        String message = ex.getMessage();
-
-        if (message != null && message.toLowerCase().contains("email")) {
-            response.put("status", HttpStatus.CONFLICT.value());
+        if (message.contains("email")) {
             response.put("message", "Email já cadastrado");
-        } else if (message != null && message.toLowerCase().contains("cpf")) {
-            response.put("status", HttpStatus.CONFLICT.value());
+        } else if (message.contains("cpf")) {
             response.put("message", "CPF já cadastrado");
-        } else if (message != null && message.toLowerCase().contains("cnpj")) {
-            response.put("status", HttpStatus.CONFLICT.value());
+        } else if (message.contains("cnpj")) {
             response.put("message", "CNPJ já cadastrado");
         } else {
-            response.put("status", HttpStatus.BAD_REQUEST.value());
             response.put("message", "Erro de integridade de dados");
         }
 
+        response.put("status", HttpStatus.CONFLICT.value());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -64,15 +70,15 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex) {
 
         Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.CONFLICT.value());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("message", ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Trata exceções genéricas (última defesa)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.put("message", "Ocorreu um erro interno inesperado.");

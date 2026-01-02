@@ -5,6 +5,7 @@ import com.resolvomt.api.dto.servico.ServicoUpdateRequestDTO;
 import com.resolvomt.api.model.Prestador;
 import com.resolvomt.api.model.Servico;
 import com.resolvomt.api.repository.ServicoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +75,7 @@ public class ServicoService {
     }
 
     public Servico buscarPorId(Long id) {
-        return servicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+        return servicoRepository.findByIdComPrestador(id) // Use sua query com JOIN FETCH
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
     }
 }

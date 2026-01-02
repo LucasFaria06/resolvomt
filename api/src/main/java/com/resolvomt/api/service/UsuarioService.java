@@ -4,37 +4,36 @@ import com.resolvomt.api.dto.usuario.UsuarioCreateRequestDTO;
 import com.resolvomt.api.enums.TipoUsuario;
 import com.resolvomt.api.model.Usuario;
 import com.resolvomt.api.repository.UsuarioRepository;
-import org.springframework.security.crypto.password.PasswordEncoder; 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 public class UsuarioService {
 
-   private final UsuarioRepository repository;
-   private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-   public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
-    this.repository = repository;
-    this.passwordEncoder = passwordEncoder;
-   }
-
-   @Transactional
-   public Usuario cadastrar(UsuarioCreateRequestDTO request) {
-
-    if (repository.existsByEmail(request.getEmail())) {
-        throw new IllegalArgumentException("E-mail já está em uso.");
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    Usuario usuario = new Usuario();
-    usuario.setNomeCompleto(request.getNomeCompleto());
-    usuario.setEmail(request.getEmail());
-    usuario.setSenha(passwordEncoder.encode(request.getSenha()));
-    usuario.setTipoUsuario(request.getTipoUsuario());
+    @Transactional
+    public Usuario cadastrar(UsuarioCreateRequestDTO request) {
 
-    return repository.save(usuario);
-   }
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("E-mail já está em uso.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNomeCompleto(request.getNomeCompleto());
+        usuario.setEmail(request.getEmail());
+        usuario.setSenha(passwordEncoder.encode(request.getSenha()));
+        usuario.setTipoUsuario(request.getTipoUsuario());
+
+        return repository.save(usuario);
+    }
 
     public Usuario buscarPorEmail(String email) {
         return repository.findByEmail(email)

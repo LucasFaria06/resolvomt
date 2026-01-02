@@ -1,11 +1,13 @@
 package com.resolvomt.api.service;
 
-import com.resolvomt.api.dto.agendamento.AgendamentoRequestDTO;
+import com.resolvomt.api.dto.agendamento.AgendamentoCreateRequestDTO;
 import com.resolvomt.api.enums.StatusAgendamento;
-import com.resolvomt.api.model.*;
+import com.resolvomt.api.model.Agendamento;
+import com.resolvomt.api.model.Cliente;
+import com.resolvomt.api.model.Servico;
 import com.resolvomt.api.repository.AgendamentoRepository;
-import com.resolvomt.api.repository.ServicoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,89 +17,97 @@ public class AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
     private final ClienteService clienteService;
-    private final ServicoRepository servicoRepository;
+    private final ServicoService servicoService;
 
-    public AgendamentoService(
-            AgendamentoRepository agendamentoRepository,
-            ClienteService clienteService,
-            ServicoRepository servicoRepository
-    ) {
+    public AgendamentoService(AgendamentoRepository agendamentoRepository,
+                              ClienteService clienteService,
+                              ServicoService servicoService) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteService = clienteService;
-        this.servicoRepository = servicoRepository;
+        this.servicoService = servicoService;
     }
 
-    public Agendamento criar(String emailCliente, AgendamentoRequestDTO dto) {
-
-        if (dto.dataHora().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Não é possível agendar um horário no passado");
-        }
-
+    @Transactional
+    public Agendamento criar(AgendamentoCreateRequestDTO dto, String emailCliente) {
         Cliente cliente = clienteService.buscarPorEmailUsuario(emailCliente);
-
-        Servico servico = servicoRepository.findById(dto.servicoId())
-                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+        Servico servico = servicoService.buscarPorId(dto.servicoId());
 
         if (!servico.isAtivo()) {
-            throw new RuntimeException("Este serviço não está disponível para agendamento");
+            throw new IllegalArgumentException("Serviço não está disponível");
         }
 
-        Prestador prestador = servico.getPrestador();
+        if (!servico.getPrestador().isVerificado()) {
+            throw new IllegalArgumentException("Prestador não está verificado");
+        }
 
-        boolean conflito = agendamentoRepository
-                .existsByPrestadorIdAndDataHora(prestador.getId(), dto.dataHora());
+        if (!servico.getPrestador().isAtivo()) {
+            throw new IllegalArgumentException("Prestador não está ativo");
+        }
+
+        LocalDateTime dataFim = dto.dataHora().plusMinutes(servico.getDuracaoMinutos());
+        boolean conflito = agendamentoRepository.existsConflito(
+                servico.getPrestador().getId(),
+                dto.dataHora(),
+                dataFim,
+                StatusAgendamento.CANCELADO
+        );
 
         if (conflito) {
-            throw new RuntimeException("Este horário já está ocupado para o prestador");
+            throw new IllegalArgumentException("Horário não disponível para este prestador");
         }
 
         Agendamento agendamento = new Agendamento();
         agendamento.setCliente(cliente);
-        agendamento.setPrestador(prestador);
         agendamento.setServico(servico);
+
+        agendamento.setPrestador(servico.getPrestador());
+
         agendamento.setDataHora(dto.dataHora());
+        agendamento.setObservacoes(dto.observacoes());
+        agendamento.setValor(servico.getValor());
+        agendamento.setDuracaoMinutos(servico.getDuracaoMinutos());
         agendamento.setStatus(StatusAgendamento.CRIADO);
 
         return agendamentoRepository.save(agendamento);
     }
 
-    public List<Agendamento> listarCliente(String emailCliente) {
-        return agendamentoRepository.findByClienteUsuarioEmail(emailCliente);
+    @Transactional(readOnly = true)
+    public List<Agendamento> listarPorCliente(String emailCliente) {
+        Cliente cliente = clienteService.buscarPorEmailUsuario(emailCliente);
+        return agendamentoRepository.findByClienteIdWithDetails(cliente.getId());
     }
 
-
-    public List<Agendamento> listarPrestador(String emailPrestador) {
-        return agendamentoRepository.findByPrestadorUsuarioEmail(emailPrestador);
+    @Transactional(readOnly = true)
+    public List<Agendamento> listarPorPrestador(String emailPrestador) {
+        return agendamentoRepository.findByPrestadorEmailWithDetails(emailPrestador);
     }
 
-    public void confirmar(Long id, String emailPrestador) {
-        Agendamento agendamento = buscarInterno(id);
+    @Transactional
+    public Agendamento confirmar(Long id, String emailPrestador) {
+        Agendamento agendamento = buscarPorIdEPrestador(id, emailPrestador);
 
-        if (!agendamento.getPrestador().getUsuario().getEmail().equals(emailPrestador)) {
-            throw new RuntimeException("Você não pode confirmar este agendamento");
+        if (agendamento.getStatus() != StatusAgendamento.CRIADO) {
+            throw new IllegalArgumentException("Apenas agendamentos com status CRIADO podem ser confirmados");
         }
 
         agendamento.setStatus(StatusAgendamento.CONFIRMADO);
-        agendamentoRepository.save(agendamento);
+        return agendamentoRepository.save(agendamento);
     }
 
-    public void cancelar(Long id, String emailPrestador) {
-        Agendamento agendamento = buscarInterno(id);
-
-        if (!agendamento.getPrestador().getUsuario().getEmail().equals(emailPrestador)) {
-            throw new RuntimeException("Você não pode cancelar este agendamento");
-        }
+    @Transactional
+    public Agendamento cancelarPorPrestador(Long id, String emailPrestador) {
+        Agendamento agendamento = buscarPorIdEPrestador(id, emailPrestador);
 
         if (agendamento.getStatus() == StatusAgendamento.CANCELADO) {
-            throw new RuntimeException("Agendamento já está cancelado");
+            throw new IllegalArgumentException("Agendamento já está cancelado");
         }
 
         agendamento.setStatus(StatusAgendamento.CANCELADO);
-        agendamentoRepository.save(agendamento);
+        return agendamentoRepository.save(agendamento);
     }
 
-    public Agendamento buscarInterno(Long id) {
-        return agendamentoRepository.findById(id)
+    private Agendamento buscarPorIdEPrestador(Long id, String emailPrestador) {
+        return agendamentoRepository.findByIdAndPrestadorEmailWithDetails(id, emailPrestador)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
     }
 }
