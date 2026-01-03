@@ -72,6 +72,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
                         .requestMatchers("/api/prestador/**").hasRole("PRESTADOR")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/conversas/**").hasAnyRole("CLIENTE", "PRESTADOR")
+                        .requestMatchers("/api/mensagens/**").hasAnyRole("CLIENTE", "PRESTADOR")
                         .anyRequest().authenticated()
                 );
 

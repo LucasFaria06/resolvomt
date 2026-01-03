@@ -30,6 +30,13 @@ public class Mensagem {
     @Column(nullable = false)
     private boolean lida;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.enviadaEm == null) {
+            this.enviadaEm = LocalDateTime.now();
+        }
+    }
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
