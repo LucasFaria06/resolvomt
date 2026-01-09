@@ -18,19 +18,23 @@ public class AgendamentoService {
     private final AgendamentoRepository agendamentoRepository;
     private final ClienteService clienteService;
     private final ServicoService servicoService;
+    private final AssinaturaService assinaturaService;
 
     public AgendamentoService(AgendamentoRepository agendamentoRepository,
                               ClienteService clienteService,
-                              ServicoService servicoService) {
+                              ServicoService servicoService, AssinaturaService assinaturaService) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteService = clienteService;
         this.servicoService = servicoService;
+        this.assinaturaService = assinaturaService;
     }
 
     @Transactional
     public Agendamento criar(AgendamentoCreateRequestDTO dto, String emailCliente) {
         Cliente cliente = clienteService.buscarPorEmailUsuario(emailCliente);
         Servico servico = servicoService.buscarPorId(dto.servicoId());
+
+        validarLimiteAgendamento(servico.getPrestador().getId());
 
         if (!servico.isAtivo()) {
             throw new IllegalArgumentException("Serviço não está disponível");
@@ -59,9 +63,7 @@ public class AgendamentoService {
         Agendamento agendamento = new Agendamento();
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
-
         agendamento.setPrestador(servico.getPrestador());
-
         agendamento.setDataHora(dto.dataHora());
         agendamento.setObservacoes(dto.observacoes());
         agendamento.setValor(servico.getValor());
@@ -70,6 +72,28 @@ public class AgendamentoService {
 
         return agendamentoRepository.save(agendamento);
     }
+
+    private void validarLimiteAgendamento(Long prestadorId) {
+        LocalDateTime inicioMes = LocalDateTime.now()
+                .withDayOfMonth(1)
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        long agendamentosNoMes =
+                agendamentoRepository.countByPrestadorIdAndDataHoraAfter(prestadorId, inicioMes);
+
+        boolean podeCriar = assinaturaService
+                .podeCriarAgendamento(prestadorId, (int) agendamentosNoMes);
+
+        if (!podeCriar) {
+            throw new IllegalStateException(
+                    "Limite de agendamentos do plano atingido"
+            );
+        }
+    }
+
 
     @Transactional(readOnly = true)
     public List<Agendamento> listarPorCliente(String emailCliente) {

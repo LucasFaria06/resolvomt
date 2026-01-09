@@ -21,7 +21,7 @@ CREATE TABLE prestadores (
                                  CHECK (plano IN ('FREE', 'BASIC', 'PREMIUM')),
 
                              CONSTRAINT ck_prestadores_status
-                                 CHECK (status_assinatura IN ('TRIAL', 'ATIVA', 'EXPIRADA', 'CANCELADA'))
+                                 CHECK (status_assinatura IN ('TRIAL', 'ATIVO', 'VENCIDO', 'CANCELADO'))
 );
 
 CREATE INDEX idx_prestadores_usuario ON prestadores(usuario_id);

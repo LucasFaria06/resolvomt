@@ -31,4 +31,7 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     Optional<Prestador> findByUsuarioEmail(String email);
 
     boolean existsByCnpj(String cnpj);
+
+    Optional<Prestador> findByUsuarioId(Long usuarioId);
 }
+

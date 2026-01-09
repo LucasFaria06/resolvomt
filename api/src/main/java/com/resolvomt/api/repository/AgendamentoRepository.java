@@ -49,4 +49,6 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("dataFim") LocalDateTime dataFim,
             @Param("statusExcluido") StatusAgendamento statusExcluido
     );
+
+    long countByPrestadorIdAndDataHoraAfter(Long prestadorId, LocalDateTime data);
 }

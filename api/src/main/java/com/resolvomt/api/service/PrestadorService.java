@@ -3,16 +3,19 @@ package com.resolvomt.api.service;
 import com.resolvomt.api.dto.prestador.PrestadorRegisterRequestDTO;
 import com.resolvomt.api.dto.prestador.PrestadorResponseDTO;
 import com.resolvomt.api.dto.usuario.UsuarioCreateRequestDTO;
-import com.resolvomt.api.enums.PlanoPrestador;
 import com.resolvomt.api.enums.StatusAssinatura;
 import com.resolvomt.api.enums.TipoUsuario;
+import com.resolvomt.api.model.Assinatura;
+import com.resolvomt.api.model.Plano;
 import com.resolvomt.api.model.Prestador;
 import com.resolvomt.api.model.Usuario;
+import com.resolvomt.api.repository.AssinaturaRepository;
+import com.resolvomt.api.repository.PlanoRepository;
 import com.resolvomt.api.repository.PrestadorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,15 +23,19 @@ public class PrestadorService {
 
     private final PrestadorRepository prestadorRepository;
     private final UsuarioService usuarioService;
+    private final AssinaturaService assinaturaService;
 
     public PrestadorService(
             PrestadorRepository prestadorRepository,
-            UsuarioService usuarioService
+            UsuarioService usuarioService,
+            AssinaturaService assinaturaService
     ) {
         this.prestadorRepository = prestadorRepository;
         this.usuarioService = usuarioService;
+        this.assinaturaService = assinaturaService;
     }
 
+    @Transactional
     public Prestador registrar(PrestadorRegisterRequestDTO dto) {
 
         String cnpjLimpo = dto.cnpj().replaceAll("\\D", "");
@@ -52,11 +59,12 @@ public class PrestadorService {
         prestador.setTelefone(dto.telefone());
         prestador.setVerificado(false);
         prestador.setAtivo(true);
-        prestador.setPlano(PlanoPrestador.FREE);
-        prestador.setStatusAssinatura(StatusAssinatura.TRIAL);
-        prestador.setTrialAte(LocalDate.now().plusDays(7));
 
-        return prestadorRepository.save(prestador);
+        Prestador prestadorSalvo = prestadorRepository.save(prestador);
+
+        assinaturaService.criarAssinaturaTrial(prestadorSalvo.getId());
+
+        return prestadorSalvo;
     }
 
     public Prestador buscarPorId(Long id) {
@@ -112,4 +120,5 @@ public class PrestadorService {
         prestador.setAtivo(false);
         return prestador;
     }
+
 }

@@ -6,6 +6,9 @@ CREATE TABLE agendamentos (
 
                               data_hora TIMESTAMP NOT NULL,
                               status VARCHAR(20) NOT NULL,
+                              observacoes TEXT,
+                              valor DECIMAL(10, 2) NOT NULL,
+                              duracao_minutos INTEGER NOT NULL,
                               criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
                               CONSTRAINT fk_agendamento_cliente
